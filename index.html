@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
-<!-- saved from url=(0134)file:///C:/Users/%D0%90%D1%80%D1%81%D0%B5%D0%BD%20%D0%90%D0%B1%D0%BB%D1%8F%D0%BC%D0%B8%D1%82%D0%BE%D0%B2/Downloads/planogram_v2_4.html -->
+<!-- saved from url=(0132)file:///C:/Users/%D0%90%D1%80%D1%81%D0%B5%D0%BD%20%D0%90%D0%B1%D0%BB%D1%8F%D0%BC%D0%B8%D1%82%D0%BE%D0%B2/Downloads/planogram_v3.html -->
 <html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Планограмматор</title>
-<script src="./Index_files/supabase-js@2"></script>
+<script src="./index_files/supabase-js@2"></script>
 <style>
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -246,7 +247,7 @@ body {
 <body>
 
 <!-- ── CONFIG SCREEN ── -->
-<div id="configScreen">
+<div id="configScreen" style="display: none;">
   <div class="config-card">
     <h1>🧩 Планограмматор</h1>
     <p>Введите ключи Supabase для подключения к базе данных</p>
@@ -277,7 +278,7 @@ body {
 </div>
 
 <!-- ── APP SCREEN ── -->
-<div id="appScreen">
+<div id="appScreen" style="display: flex;">
   <header class="header">
     <div class="header-logo">
       <div class="logo-dot"></div>
@@ -330,8 +331,36 @@ body {
           <div class="panel">
             <div class="panel-header"><div class="panel-title">Бренды в торговой точке</div></div>
             <div class="brand-select-list" id="agentBrandList">
-              <div class="empty-state"><span class="spinner"></span> Загрузка брендов…</div>
-            </div>
+    <div class="brand-select-item on" id="bsel_7a939243-5d3f-47a0-874b-31ca15cfb509" onclick="toggleAgentBrand(&#39;7a939243-5d3f-47a0-874b-31ca15cfb509&#39;)">
+      <div class="bname">
+        <span class="brand-dot" style="background:#B5D4F4"></span>Gardi
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="bmeta">Приоритет 1 · 10%</div>
+        <div class="check-circle">✓</div>
+      </div>
+    </div>
+  
+    <div class="brand-select-item on" id="bsel_73c63390-1a03-49d9-a29c-e3bab486b54e" onclick="toggleAgentBrand(&#39;73c63390-1a03-49d9-a29c-e3bab486b54e&#39;)">
+      <div class="bname">
+        <span class="brand-dot" style="background:#9FE1CB"></span>Bliss
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="bmeta">Приоритет 2 · 60%</div>
+        <div class="check-circle">✓</div>
+      </div>
+    </div>
+  
+    <div class="brand-select-item on" id="bsel_ec7d4940-2ff5-4f4c-a571-a9d7979e59f8" onclick="toggleAgentBrand(&#39;ec7d4940-2ff5-4f4c-a571-a9d7979e59f8&#39;)">
+      <div class="bname">
+        <span class="brand-dot" style="background:#F5C4B3"></span>Meva
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="bmeta">Приоритет 3 · 30%</div>
+        <div class="check-circle">✓</div>
+      </div>
+    </div>
+  </div>
             <button class="gen-btn" onclick="generatePlanogram()">Построить планограмму →</button>
           </div>
         </div>
@@ -362,9 +391,82 @@ body {
           <div class="panel-title">Бренды</div>
           <button class="btn-sm btn-green" onclick="openBrandModal()">+ Добавить бренд</button>
         </div>
-        <div id="brandsAdminList">
-          <div class="empty-state"><span class="spinner"></span> Загрузка…</div>
+        <div id="brandsAdminList"><div class="brands-admin-grid">
+    <div class="brand-admin-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:32px;height:32px;border-radius:8px;background:#B5D4F4;border:1px solid #0C447C30"></div>
+        <div>
+          <div style="font-weight:600;font-size:14px">Gardi</div>
+          <div style="font-size:11px;color:var(--text3)">Приоритет 1 · 10% полки</div>
         </div>
+        <div style="margin-left:auto">
+          <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+            активен
+          </span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px">
+        SKU: 4 позиций
+      </div>
+      <div class="card-actions">
+        <button class="btn-sm btn-gray" onclick="openBrandModal({&quot;id&quot;:&quot;7a939243-5d3f-47a0-874b-31ca15cfb509&quot;,&quot;name&quot;:&quot;Gardi&quot;,&quot;priority&quot;:1,&quot;shelf_share&quot;:10,&quot;color&quot;:&quot;#B5D4F4&quot;,&quot;text_color&quot;:&quot;#0C447C&quot;,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️ Изменить</button>
+        <button class="btn-sm btn-gray" onclick="toggleBrandActive(&#39;7a939243-5d3f-47a0-874b-31ca15cfb509&#39;,false)">
+          🙈 Скрыть
+        </button>
+        <button class="btn-sm btn-red" onclick="deleteBrand(&#39;7a939243-5d3f-47a0-874b-31ca15cfb509&#39;)">🗑 Удалить</button>
+      </div>
+    </div>
+  
+    <div class="brand-admin-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:32px;height:32px;border-radius:8px;background:#9FE1CB;border:1px solid #08504130"></div>
+        <div>
+          <div style="font-weight:600;font-size:14px">Bliss</div>
+          <div style="font-size:11px;color:var(--text3)">Приоритет 2 · 60% полки</div>
+        </div>
+        <div style="margin-left:auto">
+          <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+            активен
+          </span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px">
+        SKU: 4 позиций
+      </div>
+      <div class="card-actions">
+        <button class="btn-sm btn-gray" onclick="openBrandModal({&quot;id&quot;:&quot;73c63390-1a03-49d9-a29c-e3bab486b54e&quot;,&quot;name&quot;:&quot;Bliss&quot;,&quot;priority&quot;:2,&quot;shelf_share&quot;:60,&quot;color&quot;:&quot;#9FE1CB&quot;,&quot;text_color&quot;:&quot;#085041&quot;,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️ Изменить</button>
+        <button class="btn-sm btn-gray" onclick="toggleBrandActive(&#39;73c63390-1a03-49d9-a29c-e3bab486b54e&#39;,false)">
+          🙈 Скрыть
+        </button>
+        <button class="btn-sm btn-red" onclick="deleteBrand(&#39;73c63390-1a03-49d9-a29c-e3bab486b54e&#39;)">🗑 Удалить</button>
+      </div>
+    </div>
+  
+    <div class="brand-admin-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:32px;height:32px;border-radius:8px;background:#F5C4B3;border:1px solid #712B1330"></div>
+        <div>
+          <div style="font-weight:600;font-size:14px">Meva</div>
+          <div style="font-size:11px;color:var(--text3)">Приоритет 3 · 30% полки</div>
+        </div>
+        <div style="margin-left:auto">
+          <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+            активен
+          </span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px">
+        SKU: 4 позиций
+      </div>
+      <div class="card-actions">
+        <button class="btn-sm btn-gray" onclick="openBrandModal({&quot;id&quot;:&quot;ec7d4940-2ff5-4f4c-a571-a9d7979e59f8&quot;,&quot;name&quot;:&quot;Meva&quot;,&quot;priority&quot;:3,&quot;shelf_share&quot;:30,&quot;color&quot;:&quot;#F5C4B3&quot;,&quot;text_color&quot;:&quot;#712B13&quot;,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️ Изменить</button>
+        <button class="btn-sm btn-gray" onclick="toggleBrandActive(&#39;ec7d4940-2ff5-4f4c-a571-a9d7979e59f8&#39;,false)">
+          🙈 Скрыть
+        </button>
+        <button class="btn-sm btn-red" onclick="deleteBrand(&#39;ec7d4940-2ff5-4f4c-a571-a9d7979e59f8&#39;)">🗑 Удалить</button>
+      </div>
+    </div>
+  </div></div>
       </div>
 
       <!-- SKUs section -->
@@ -372,9 +474,7 @@ body {
         <div class="panel-header">
           <div class="panel-title">SKU / Товары</div>
           <div style="display:flex;gap:8px;align-items:center">
-            <select id="skuBrandFilter" onchange="loadSkuTable()" style="padding:6px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;background:var(--surface)">
-              <option value="">Все бренды</option>
-            </select>
+            <select id="skuBrandFilter" onchange="loadSkuTable()" style="padding:6px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;background:var(--surface)"><option value="">Все бренды</option><option value="7a939243-5d3f-47a0-874b-31ca15cfb509">Gardi</option><option value="73c63390-1a03-49d9-a29c-e3bab486b54e">Bliss</option><option value="ec7d4940-2ff5-4f4c-a571-a9d7979e59f8">Meva</option></select>
             <button class="btn-sm btn-green" onclick="openSkuModal()">+ Добавить SKU</button>
           </div>
         </div>
@@ -391,9 +491,247 @@ body {
                 <th style="width:100px">Действия</th>
               </tr>
             </thead>
-            <tbody id="skuTableBody">
-              <tr><td colspan="7"><div class="empty-state"><span class="spinner"></span> Загрузка…</div></td></tr>
-            </tbody>
+            <tbody id="skuTableBody"><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;c2dad6c0-868f-4451-93e8-540915a11062&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_c2dad6c0-868f-4451-93e8-540915a11062" onchange="uploadSkuPhoto(&#39;c2dad6c0-868f-4451-93e8-540915a11062&#39;,this)"></td>
+      <td><strong>апельсин</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#B5D4F4"></span>Gardi
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">1</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;c2dad6c0-868f-4451-93e8-540915a11062&quot;,&quot;brand_id&quot;:&quot;7a939243-5d3f-47a0-874b-31ca15cfb509&quot;,&quot;name&quot;:&quot;апельсин&quot;,&quot;format&quot;:1,&quot;priority&quot;:1,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;c2dad6c0-868f-4451-93e8-540915a11062&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;23b189c6-30e1-43bd-a58c-aceebd0d16e4&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_23b189c6-30e1-43bd-a58c-aceebd0d16e4" onchange="uploadSkuPhoto(&#39;23b189c6-30e1-43bd-a58c-aceebd0d16e4&#39;,this)"></td>
+      <td><strong>яблоко</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#B5D4F4"></span>Gardi
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">2</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;23b189c6-30e1-43bd-a58c-aceebd0d16e4&quot;,&quot;brand_id&quot;:&quot;7a939243-5d3f-47a0-874b-31ca15cfb509&quot;,&quot;name&quot;:&quot;яблоко&quot;,&quot;format&quot;:1,&quot;priority&quot;:2,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;23b189c6-30e1-43bd-a58c-aceebd0d16e4&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;b45be2a6-e3ad-4522-abc4-065c53034b74&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_b45be2a6-e3ad-4522-abc4-065c53034b74" onchange="uploadSkuPhoto(&#39;b45be2a6-e3ad-4522-abc4-065c53034b74&#39;,this)"></td>
+      <td><strong>вишня</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#B5D4F4"></span>Gardi
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">3</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;b45be2a6-e3ad-4522-abc4-065c53034b74&quot;,&quot;brand_id&quot;:&quot;7a939243-5d3f-47a0-874b-31ca15cfb509&quot;,&quot;name&quot;:&quot;вишня&quot;,&quot;format&quot;:1,&quot;priority&quot;:3,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;b45be2a6-e3ad-4522-abc4-065c53034b74&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;d4ea8d08-c1df-4b90-ab04-94a1f34b4e07&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_d4ea8d08-c1df-4b90-ab04-94a1f34b4e07" onchange="uploadSkuPhoto(&#39;d4ea8d08-c1df-4b90-ab04-94a1f34b4e07&#39;,this)"></td>
+      <td><strong>персик</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#B5D4F4"></span>Gardi
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">4</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;d4ea8d08-c1df-4b90-ab04-94a1f34b4e07&quot;,&quot;brand_id&quot;:&quot;7a939243-5d3f-47a0-874b-31ca15cfb509&quot;,&quot;name&quot;:&quot;персик&quot;,&quot;format&quot;:1,&quot;priority&quot;:4,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;d4ea8d08-c1df-4b90-ab04-94a1f34b4e07&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;e1f1ee7e-3c14-4935-9ce2-a7286c015593&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_e1f1ee7e-3c14-4935-9ce2-a7286c015593" onchange="uploadSkuPhoto(&#39;e1f1ee7e-3c14-4935-9ce2-a7286c015593&#39;,this)"></td>
+      <td><strong>апельсин</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#9FE1CB"></span>Bliss
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">1</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;e1f1ee7e-3c14-4935-9ce2-a7286c015593&quot;,&quot;brand_id&quot;:&quot;73c63390-1a03-49d9-a29c-e3bab486b54e&quot;,&quot;name&quot;:&quot;апельсин&quot;,&quot;format&quot;:1,&quot;priority&quot;:1,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;e1f1ee7e-3c14-4935-9ce2-a7286c015593&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;7777bc96-5ffe-48ab-bfe1-60a14344849b&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_7777bc96-5ffe-48ab-bfe1-60a14344849b" onchange="uploadSkuPhoto(&#39;7777bc96-5ffe-48ab-bfe1-60a14344849b&#39;,this)"></td>
+      <td><strong>яблоко</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#9FE1CB"></span>Bliss
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">2</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;7777bc96-5ffe-48ab-bfe1-60a14344849b&quot;,&quot;brand_id&quot;:&quot;73c63390-1a03-49d9-a29c-e3bab486b54e&quot;,&quot;name&quot;:&quot;яблоко&quot;,&quot;format&quot;:1,&quot;priority&quot;:2,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;7777bc96-5ffe-48ab-bfe1-60a14344849b&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;71aa4695-49f2-45c5-9168-7c29f94f1230&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_71aa4695-49f2-45c5-9168-7c29f94f1230" onchange="uploadSkuPhoto(&#39;71aa4695-49f2-45c5-9168-7c29f94f1230&#39;,this)"></td>
+      <td><strong>вишня</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#9FE1CB"></span>Bliss
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">3</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;71aa4695-49f2-45c5-9168-7c29f94f1230&quot;,&quot;brand_id&quot;:&quot;73c63390-1a03-49d9-a29c-e3bab486b54e&quot;,&quot;name&quot;:&quot;вишня&quot;,&quot;format&quot;:1,&quot;priority&quot;:3,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;71aa4695-49f2-45c5-9168-7c29f94f1230&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;acf1211a-4d6b-4f7e-8526-f8d7d5955915&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_acf1211a-4d6b-4f7e-8526-f8d7d5955915" onchange="uploadSkuPhoto(&#39;acf1211a-4d6b-4f7e-8526-f8d7d5955915&#39;,this)"></td>
+      <td><strong>персик</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#9FE1CB"></span>Bliss
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">4</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;acf1211a-4d6b-4f7e-8526-f8d7d5955915&quot;,&quot;brand_id&quot;:&quot;73c63390-1a03-49d9-a29c-e3bab486b54e&quot;,&quot;name&quot;:&quot;персик&quot;,&quot;format&quot;:1,&quot;priority&quot;:4,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;acf1211a-4d6b-4f7e-8526-f8d7d5955915&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;5796ece9-5ed0-494b-b37e-7302040f0b17&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_5796ece9-5ed0-494b-b37e-7302040f0b17" onchange="uploadSkuPhoto(&#39;5796ece9-5ed0-494b-b37e-7302040f0b17&#39;,this)"></td>
+      <td><strong>апельсин</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#F5C4B3"></span>Meva
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">1</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;5796ece9-5ed0-494b-b37e-7302040f0b17&quot;,&quot;brand_id&quot;:&quot;ec7d4940-2ff5-4f4c-a571-a9d7979e59f8&quot;,&quot;name&quot;:&quot;апельсин&quot;,&quot;format&quot;:1,&quot;priority&quot;:1,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;5796ece9-5ed0-494b-b37e-7302040f0b17&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;832cdb23-f497-407c-85e1-0221a1205d86&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_832cdb23-f497-407c-85e1-0221a1205d86" onchange="uploadSkuPhoto(&#39;832cdb23-f497-407c-85e1-0221a1205d86&#39;,this)"></td>
+      <td><strong>яблоко</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#F5C4B3"></span>Meva
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">2</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;832cdb23-f497-407c-85e1-0221a1205d86&quot;,&quot;brand_id&quot;:&quot;ec7d4940-2ff5-4f4c-a571-a9d7979e59f8&quot;,&quot;name&quot;:&quot;яблоко&quot;,&quot;format&quot;:1,&quot;priority&quot;:2,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;832cdb23-f497-407c-85e1-0221a1205d86&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;c336a168-358f-45b5-80d6-b6948b3668c0&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_c336a168-358f-45b5-80d6-b6948b3668c0" onchange="uploadSkuPhoto(&#39;c336a168-358f-45b5-80d6-b6948b3668c0&#39;,this)"></td>
+      <td><strong>вишня</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#F5C4B3"></span>Meva
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">3</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;c336a168-358f-45b5-80d6-b6948b3668c0&quot;,&quot;brand_id&quot;:&quot;ec7d4940-2ff5-4f4c-a571-a9d7979e59f8&quot;,&quot;name&quot;:&quot;вишня&quot;,&quot;format&quot;:1,&quot;priority&quot;:3,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;c336a168-358f-45b5-80d6-b6948b3668c0&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr><tr>
+      <td><div class="sku-photo-empty" onclick="triggerPhotoUpload(&#39;a3ce8c01-519b-4e67-aef6-fb5a520c0194&#39;)">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_a3ce8c01-519b-4e67-aef6-fb5a520c0194" onchange="uploadSkuPhoto(&#39;a3ce8c01-519b-4e67-aef6-fb5a520c0194&#39;,this)"></td>
+      <td><strong>персик</strong></td>
+      <td>
+        <span class="brand-dot" style="background:#F5C4B3"></span>Meva
+      </td>
+      <td style="text-align:center">1</td>
+      <td style="text-align:center">4</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-bg);color:var(--accent)">
+          актив.
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick="openSkuModal({&quot;id&quot;:&quot;a3ce8c01-519b-4e67-aef6-fb5a520c0194&quot;,&quot;brand_id&quot;:&quot;ec7d4940-2ff5-4f4c-a571-a9d7979e59f8&quot;,&quot;name&quot;:&quot;персик&quot;,&quot;format&quot;:1,&quot;priority&quot;:4,&quot;photo_url&quot;:null,&quot;active&quot;:true,&quot;created_at&quot;:&quot;2026-06-05T10:28:51.081629+00:00&quot;})">✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku(&#39;a3ce8c01-519b-4e67-aef6-fb5a520c0194&#39;)">🗑</button>
+        </div>
+      </td>
+    </tr></tbody>
           </table>
         </div>
       </div>
@@ -438,7 +776,7 @@ body {
       <div class="form-row">
         <div class="form-field">
           <label>Бренд</label>
-          <select id="sBrand" style="padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;background:var(--surface)"></select>
+          <select id="sBrand" style="padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;background:var(--surface)"><option value="7a939243-5d3f-47a0-874b-31ca15cfb509">Gardi</option><option value="73c63390-1a03-49d9-a29c-e3bab486b54e">Bliss</option><option value="ec7d4940-2ff5-4f4c-a571-a9d7979e59f8">Meva</option></select>
         </div>
         <div class="form-field"><label>Формат</label><input type="number" id="sFormat" value="1" min="1" max="20"></div>
         <div class="form-field"><label>Приоритет</label><input type="number" id="sPriority" value="1" min="1" max="999"></div>
@@ -468,7 +806,7 @@ body {
 // ═══════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════
-let supabase = null;
+let dbClient = null;
 let serviceClient = null;
 let BRANDS = [];
 let SKUS = [];
@@ -504,7 +842,7 @@ function connectSupabase() {
   const svc  = document.getElementById('cfgService').value.trim();
   if (!url || !anon) { toast('Введите URL и anon key', true); return; }
 
-  supabase = window.supabase.createClient(url, anon);
+  dbClient = window.supabase.createClient(url, anon);
   if (svc) serviceClient = window.supabase.createClient(url, svc);
 
   localStorage.setItem('pg_url', url);
@@ -546,8 +884,8 @@ async function loadData() {
   if (isDemo) return;
   try {
     const [bRes, sRes] = await Promise.all([
-      supabase.from('brands').select('*').order('priority'),
-      supabase.from('skus').select('*').order('priority'),
+      dbClient.from('brands').select('*').order('priority'),
+      dbClient.from('skus').select('*').order('priority'),
     ]);
     if (bRes.error) throw bRes.error;
     if (sRes.error) throw sRes.error;
@@ -809,7 +1147,7 @@ async function saveBrand() {
     if (id) { const i = BRANDS.findIndex(b => b.id === id); if (i>=0) BRANDS[i] = {...BRANDS[i], ...data}; }
     else BRANDS.push({ id: 'b'+Date.now(), active: true, ...data });
   } else {
-    const cli = serviceClient || supabase;
+    const cli = serviceClient || dbClient;
     let res;
     if (id) res = await cli.from('brands').update(data).eq('id', id);
     else    res = await cli.from('brands').insert({ ...data, active: true });
@@ -824,7 +1162,7 @@ async function saveBrand() {
 async function toggleBrandActive(id, val) {
   if (isDemo) { const b = BRANDS.find(x => x.id === id); if (b) b.active = val; }
   else {
-    const cli = serviceClient || supabase;
+    const cli = serviceClient || dbClient;
     const res = await cli.from('brands').update({ active: val }).eq('id', id);
     if (res.error) { toast(res.error.message, true); return; }
     await loadData();
@@ -839,7 +1177,7 @@ async function deleteBrand(id) {
     BRANDS = BRANDS.filter(b => b.id !== id);
     SKUS   = SKUS.filter(s => s.brand_id !== id);
   } else {
-    const cli = serviceClient || supabase;
+    const cli = serviceClient || dbClient;
     const res = await cli.from('brands').delete().eq('id', id);
     if (res.error) { toast(res.error.message, true); return; }
     await loadData();
@@ -902,7 +1240,7 @@ async function saveSku() {
     if (id) { const i = SKUS.findIndex(s => s.id === id); if (i>=0) SKUS[i] = {...SKUS[i], ...data}; }
     else SKUS.push({ id: 's'+Date.now(), active: true, photo_url: null, ...data });
   } else {
-    const cli = serviceClient || supabase;
+    const cli = serviceClient || dbClient;
     let res;
     if (id) res = await cli.from('skus').update(data).eq('id', id);
     else    res = await cli.from('skus').insert({ ...data, active: true });
@@ -918,7 +1256,7 @@ async function deleteSku(id) {
   if (!confirm('Удалить этот SKU?')) return;
   if (isDemo) { SKUS = SKUS.filter(s => s.id !== id); }
   else {
-    const cli = serviceClient || supabase;
+    const cli = serviceClient || dbClient;
     const res = await cli.from('skus').delete().eq('id', id);
     if (res.error) { toast(res.error.message, true); return; }
     await loadData();
