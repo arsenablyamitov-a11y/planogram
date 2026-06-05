@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<!-- saved from url=(0134)file:///C:/Users/%D0%90%D1%80%D1%81%D0%B5%D0%BD%20%D0%90%D0%B1%D0%BB%D1%8F%D0%BC%D0%B8%D1%82%D0%BE%D0%B2/Downloads/planogram_v2_4.html -->
+<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Планограмматор</title>
+<script src="./Index_files/supabase-js@2"></script>
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface2: #f0efe9;
+  --border: #dddbd2;
+  --border2: #c8c6bc;
+  --text: #1a1917;
+  --text2: #6b6962;
+  --text3: #9e9b93;
+  --accent: #1a6b4a;
+  --accent-bg: #e6f4ed;
+  --accent-light: #d0eade;
+  --danger: #c0392b;
+  --danger-bg: #fdf0ee;
+  --warn: #b45309;
+  --warn-bg: #fef3e2;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+}
+
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── Config Screen ── */
+#configScreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.config-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-md);
+}
+.config-card h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+.config-card p { color: var(--text2); font-size: 13px; margin-bottom: 1.5rem; }
+.config-field { margin-bottom: 14px; }
+.config-field label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
+.config-field input {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); font-size: 13px; font-family: monospace;
+  background: var(--surface2); color: var(--text);
+  outline: none; transition: border-color .15s;
+}
+.config-field input:focus { border-color: var(--accent); }
+.config-actions { display: flex; gap: 10px; margin-top: 1.5rem; }
+.btn-primary { background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); padding: 9px 18px; font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity .15s; }
+.btn-primary:hover { opacity: .88; }
+.btn-outline { background: none; color: var(--text2); border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 9px 18px; font-size: 13px; cursor: pointer; transition: background .15s; }
+.btn-outline:hover { background: var(--surface2); }
+.hint-box { background: var(--warn-bg); border: 1px solid #f6d397; border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; color: var(--warn); margin-top: 1rem; line-height: 1.6; }
+
+/* ── App Shell ── */
+#appScreen { display: none; flex-direction: column; min-height: 100vh; }
+
+/* ── Header ── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-logo { font-size: 16px; font-weight: 700; letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; }
+.logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+.header-tabs { display: flex; gap: 2px; }
+.tab-btn {
+  padding: 6px 14px; border-radius: var(--radius-sm); border: none; background: none;
+  font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; transition: all .15s;
+}
+.tab-btn.active { background: var(--accent-bg); color: var(--accent); }
+.tab-btn:hover:not(.active) { background: var(--surface2); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.connection-badge {
+  font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px;
+  background: var(--accent-bg); color: var(--accent);
+}
+.btn-settings { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 10px; font-size: 12px; color: var(--text2); cursor: pointer; }
+.btn-settings:hover { background: var(--surface2); }
+
+/* ── Content ── */
+.content { flex: 1; padding: 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+/* ── Panel ── */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.panel-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text2); }
+
+/* ── Forms ── */
+.form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.form-field { display: flex; flex-direction: column; gap: 4px; }
+.form-field label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: .04em; }
+.form-field input, .form-field select {
+  padding: 7px 10px; border: 1px solid var(--border2); border-radius: var(--radius-sm);
+  font-size: 13px; background: var(--surface); color: var(--text);
+  outline: none; transition: border-color .15s;
+}
+.form-field input:focus, .form-field select:focus { border-color: var(--accent); }
+.form-field input[type=number] { width: 90px; }
+.form-field input[type=text] { width: 160px; }
+.form-field input[type=color] { width: 56px; height: 34px; padding: 2px 4px; cursor: pointer; }
+.form-field.wide input { width: 220px; }
+
+/* ── Buttons ── */
+.btn-sm { padding: 6px 12px; border-radius: var(--radius-sm); border: none; font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s; }
+.btn-green { background: var(--accent); color: white; }
+.btn-green:hover { opacity: .85; }
+.btn-red { background: var(--danger-bg); color: var(--danger); border: 1px solid #f4c8c4; }
+.btn-red:hover { background: #fad9d6; }
+.btn-gray { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+.btn-gray:hover { background: #e8e6df; }
+
+/* ── Table ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th { text-align: left; padding: 8px 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--text3); border-bottom: 1px solid var(--border); }
+.data-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--surface2); }
+.data-table td input { padding: 4px 7px; border: 1px solid var(--border2); border-radius: 4px; font-size: 12px; background: var(--surface); width: 100%; }
+.data-table td input:focus { outline: none; border-color: var(--accent); }
+
+/* ── Brand chip ── */
+.brand-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+.sku-photo { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border); }
+.sku-photo-empty { width: 36px; height: 36px; border-radius: 4px; background: var(--surface2); border: 1px dashed var(--border2); display: flex; align-items: center; justify-content: center; color: var(--text3); font-size: 18px; cursor: pointer; }
+.upload-input { display: none; }
+
+/* ── Brands grid (admin) ── */
+.brands-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.brand-admin-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; position: relative; }
+.brand-admin-card .card-actions { display: flex; gap: 6px; margin-top: 10px; }
+.brand-color-preview { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border2); flex-shrink: 0; }
+
+/* ── Agent view ── */
+.agent-grid { display: grid; grid-template-columns: 340px 1fr; gap: 1rem; align-items: start; }
+@media (max-width: 800px) { .agent-grid { grid-template-columns: 1fr; } }
+
+.brand-select-list { display: flex; flex-direction: column; gap: 6px; }
+.brand-select-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  cursor: pointer; transition: all .15s; user-select: none;
+}
+.brand-select-item.on { border-color: var(--accent); background: var(--accent-bg); }
+.brand-select-item .bname { font-weight: 500; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.brand-select-item .bmeta { font-size: 11px; color: var(--text2); }
+.brand-select-item.on .bmeta { color: var(--accent); }
+.check-circle { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+.brand-select-item.on .check-circle { background: var(--accent); border-color: var(--accent); color: white; }
+
+.gen-btn {
+  width: 100%; padding: 11px; background: var(--text); color: white;
+  border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: opacity .15s; margin-top: 10px; letter-spacing: .01em;
+}
+.gen-btn:hover { opacity: .85; }
+
+/* ── Planogram canvas ── */
+.planogram-container { overflow-x: auto; }
+.shelf-row-wrap { display: flex; align-items: stretch; margin-bottom: 5px; }
+.shelf-label-col { width: 60px; min-width: 60px; font-size: 11px; color: var(--text2); display: flex; align-items: center; padding-right: 6px; flex-shrink: 0; }
+.shelf-track {
+  display: flex; flex: 1; border: 1.5px solid #b0aea5; border-radius: 5px;
+  overflow: hidden; position: relative; min-height: 58px;
+}
+.shelf-track::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: #c5c3bb; }
+.facing {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-right: 0.5px solid rgba(0,0,0,.07); padding: 4px 2px;
+  font-size: 9px; line-height: 1.25; text-align: center; overflow: hidden; flex-shrink: 0;
+}
+.facing:last-child { border-right: none; }
+.facing img { width: 90%; height: 60%; object-fit: contain; margin-bottom: 2px; }
+.facing-brand { font-size: 9px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.facing-sku { font-size: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+
+.planogram-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
+.legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+.stats-strip { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.stat-chip { background: var(--surface2); border-radius: var(--radius-sm); padding: 8px 14px; }
+.stat-chip .val { font-size: 20px; font-weight: 700; line-height: 1; }
+.stat-chip .lbl { font-size: 10px; color: var(--text3); margin-top: 2px; text-transform: uppercase; letter-spacing: .04em; }
+
+/* ── Toast ── */
+#toast {
+  position: fixed; bottom: 24px; right: 24px; background: var(--text);
+  color: white; padding: 10px 18px; border-radius: var(--radius-sm);
+  font-size: 13px; z-index: 9999; opacity: 0; pointer-events: none;
+  transform: translateY(8px); transition: all .25s;
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+#toast.error { background: var(--danger); }
+
+/* ── Loading ── */
+.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin-right: 6px; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty-state { text-align: center; padding: 2.5rem; color: var(--text3); font-size: 13px; }
+.empty-icon { font-size: 2.5rem; margin-bottom: 8px; display: block; }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 500;
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface); border-radius: var(--radius); padding: 1.75rem;
+  width: 100%; max-width: 520px; box-shadow: var(--shadow-md);
+  transform: translateY(12px); transition: transform .2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal h2 { font-size: 17px; font-weight: 600; margin-bottom: 1.25rem; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+</style>
+</head>
+<body>
+
+<!-- ── CONFIG SCREEN ── -->
+<div id="configScreen">
+  <div class="config-card">
+    <h1>🧩 Планограмматор</h1>
+    <p>Введите ключи Supabase для подключения к базе данных</p>
+
+    <div class="config-field">
+      <label>Project URL</label>
+      <input type="text" id="cfgUrl" placeholder="https://xxxx.supabase.co" autocomplete="off">
+    </div>
+    <div class="config-field">
+      <label>Anon Key <span style="color:var(--text3)">(для агентов — чтение)</span></label>
+      <input type="text" id="cfgAnon" placeholder="eyJhbGciOiJIUzI1NiIs..." autocomplete="off">
+    </div>
+    <div class="config-field">
+      <label>Service Role Key <span style="color:var(--text3)">(для админа — запись)</span></label>
+      <input type="text" id="cfgService" placeholder="eyJhbGciOiJIUzI1NiIs..." autocomplete="off">
+    </div>
+
+    <div class="hint-box">
+      ⚠️ Service role key даёт полный доступ к БД.<br>
+      Храните его только у себя, не передавайте агентам.
+    </div>
+
+    <div class="config-actions">
+      <button class="btn-primary" onclick="connectSupabase()">Подключить</button>
+      <button class="btn-outline" onclick="connectDemo()">Демо-режим (без БД)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── APP SCREEN ── -->
+<div id="appScreen">
+  <header class="header">
+    <div class="header-logo">
+      <div class="logo-dot"></div>
+      Планограмматор
+    </div>
+    <div class="header-tabs">
+      <button class="tab-btn active" id="tabAgent" onclick="switchTab(&#39;agent&#39;)">👤 Агент</button>
+      <button class="tab-btn" id="tabAdmin" onclick="switchTab(&#39;admin&#39;)">⚙️ Админ</button>
+    </div>
+    <div class="header-right">
+      <span class="connection-badge" id="connBadge">● подключено</span>
+      <button class="btn-settings" onclick="goToConfig()">Настройки</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ══ AGENT TAB ══ -->
+    <div id="agentTab">
+      <div class="agent-grid">
+
+        <!-- Left panel -->
+        <div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Параметры полки</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div class="form-row">
+                <div class="form-field">
+                  <label>Длина полки (см)</label>
+                  <input type="number" id="aShelfLen" value="120" min="30" max="500" step="10">
+                </div>
+                <div class="form-field">
+                  <label>Кол-во полок</label>
+                  <input type="number" id="aShelfCount" value="3" min="1" max="10">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label>Ширина фейсинга (см)</label>
+                  <input type="number" id="aFacingW" value="10" min="4" max="30">
+                </div>
+                <div class="form-field">
+                  <label>Высота ячейки (см)</label>
+                  <input type="number" id="aCellH" value="20" min="8" max="60">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Бренды в торговой точке</div></div>
+            <div class="brand-select-list" id="agentBrandList">
+              <div class="empty-state"><span class="spinner"></span> Загрузка брендов…</div>
+            </div>
+            <button class="gen-btn" onclick="generatePlanogram()">Построить планограмму →</button>
+          </div>
+        </div>
+
+        <!-- Right panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Планограмма</div>
+            <button class="btn-sm btn-gray" onclick="printPlanogram()" id="printBtn" style="display:none">🖨 Печать</button>
+          </div>
+          <div id="planogramOutput">
+            <div class="empty-state">
+              <span class="empty-icon">📐</span>
+              Выберите бренды и нажмите «Построить»
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ ADMIN TAB ══ -->
+    <div id="adminTab" style="display:none">
+
+      <!-- Brands section -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Бренды</div>
+          <button class="btn-sm btn-green" onclick="openBrandModal()">+ Добавить бренд</button>
+        </div>
+        <div id="brandsAdminList">
+          <div class="empty-state"><span class="spinner"></span> Загрузка…</div>
+        </div>
+      </div>
+
+      <!-- SKUs section -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">SKU / Товары</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="skuBrandFilter" onchange="loadSkuTable()" style="padding:6px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;background:var(--surface)">
+              <option value="">Все бренды</option>
+            </select>
+            <button class="btn-sm btn-green" onclick="openSkuModal()">+ Добавить SKU</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table" id="skuTable">
+            <thead>
+              <tr>
+                <th style="width:48px">Фото</th>
+                <th>Название</th>
+                <th>Бренд</th>
+                <th style="width:80px">Формат</th>
+                <th style="width:80px">Приоритет</th>
+                <th style="width:70px">Статус</th>
+                <th style="width:100px">Действия</th>
+              </tr>
+            </thead>
+            <tbody id="skuTableBody">
+              <tr><td colspan="7"><div class="empty-state"><span class="spinner"></span> Загрузка…</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── BRAND MODAL ── -->
+<div class="modal-overlay" id="brandModal">
+  <div class="modal">
+    <h2 id="brandModalTitle">Новый бренд</h2>
+    <input type="hidden" id="bModalId">
+    <div class="form-row" style="flex-direction:column;gap:12px">
+      <div class="form-field wide"><label>Название бренда</label><input type="text" id="bName" placeholder="Gardi"></div>
+      <div class="form-row">
+        <div class="form-field"><label>Приоритет (слева→)</label><input type="number" id="bPriority" value="1" min="1" max="99"></div>
+        <div class="form-field"><label>Доля полки (%)</label><input type="number" id="bShare" value="30" min="1" max="100"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Цвет фона</label><input type="color" id="bColor" value="#9FE1CB"></div>
+        <div class="form-field"><label>Цвет текста</label><input type="color" id="bTextColor" value="#085041"></div>
+        <div id="bPreview" style="padding:6px 14px;border-radius:6px;font-size:13px;font-weight:600;align-self:flex-end">Превью</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeModal(&#39;brandModal&#39;)">Отмена</button>
+      <button class="btn-primary" onclick="saveBrand()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SKU MODAL ── -->
+<div class="modal-overlay" id="skuModal">
+  <div class="modal">
+    <h2 id="skuModalTitle">Новый SKU</h2>
+    <input type="hidden" id="sModalId">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="form-row">
+        <div class="form-field wide"><label>Название товара</label><input type="text" id="sName" placeholder="Апельсин 1л"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Бренд</label>
+          <select id="sBrand" style="padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;background:var(--surface)"></select>
+        </div>
+        <div class="form-field"><label>Формат</label><input type="number" id="sFormat" value="1" min="1" max="20"></div>
+        <div class="form-field"><label>Приоритет</label><input type="number" id="sPriority" value="1" min="1" max="999"></div>
+      </div>
+      <div class="form-field">
+        <label>Фото товара</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div id="sPhotoPreview" style="width:64px;height:64px;border-radius:8px;border:1.5px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;overflow:hidden" onclick="document.getElementById(&#39;sPhotoFile&#39;).click()">📷</div>
+          <div>
+            <input type="file" id="sPhotoFile" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+            <button class="btn-sm btn-gray" onclick="document.getElementById(&#39;sPhotoFile&#39;).click()">Выбрать файл</button>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px">JPG, PNG до 2 МБ</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeModal(&#39;skuModal&#39;)">Отмена</button>
+      <button class="btn-primary" onclick="saveSku()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let supabase = null;
+let serviceClient = null;
+let BRANDS = [];
+let SKUS = [];
+let isDemo = false;
+
+// Demo data
+const DEMO_BRANDS = [
+  { id: 'b1', name: 'Gardi', priority: 1, shelf_share: 10, color: '#B5D4F4', text_color: '#0C447C', active: true },
+  { id: 'b2', name: 'Bliss', priority: 2, shelf_share: 60, color: '#9FE1CB', text_color: '#085041', active: true },
+  { id: 'b3', name: 'Meva',  priority: 3, shelf_share: 30, color: '#F5C4B3', text_color: '#712B13', active: true },
+];
+const DEMO_SKUS = [
+  { id: 's1', brand_id: 'b1', name: 'апельсин', format: 1, priority: 1, photo_url: null, active: true },
+  { id: 's2', brand_id: 'b1', name: 'яблоко',   format: 1, priority: 2, photo_url: null, active: true },
+  { id: 's3', brand_id: 'b1', name: 'вишня',     format: 1, priority: 3, photo_url: null, active: true },
+  { id: 's4', brand_id: 'b1', name: 'персик',    format: 1, priority: 4, photo_url: null, active: true },
+  { id: 's5', brand_id: 'b2', name: 'апельсин',  format: 1, priority: 1, photo_url: null, active: true },
+  { id: 's6', brand_id: 'b2', name: 'яблоко',    format: 1, priority: 2, photo_url: null, active: true },
+  { id: 's7', brand_id: 'b2', name: 'вишня',     format: 1, priority: 3, photo_url: null, active: true },
+  { id: 's8', brand_id: 'b2', name: 'персик',    format: 1, priority: 4, photo_url: null, active: true },
+  { id: 's9', brand_id: 'b3', name: 'апельсин',  format: 1, priority: 1, photo_url: null, active: true },
+  { id: 'sa', brand_id: 'b3', name: 'яблоко',    format: 1, priority: 2, photo_url: null, active: true },
+  { id: 'sb', brand_id: 'b3', name: 'вишня',     format: 1, priority: 3, photo_url: null, active: true },
+  { id: 'sc', brand_id: 'b3', name: 'персик',    format: 1, priority: 4, photo_url: null, active: true },
+];
+
+// ═══════════════════════════════════════════
+// CONNECTION
+// ═══════════════════════════════════════════
+function connectSupabase() {
+  const url  = document.getElementById('cfgUrl').value.trim();
+  const anon = document.getElementById('cfgAnon').value.trim();
+  const svc  = document.getElementById('cfgService').value.trim();
+  if (!url || !anon) { toast('Введите URL и anon key', true); return; }
+
+  supabase = window.supabase.createClient(url, anon);
+  if (svc) serviceClient = window.supabase.createClient(url, svc);
+
+  localStorage.setItem('pg_url', url);
+  localStorage.setItem('pg_anon', anon);
+  if (svc) localStorage.setItem('pg_svc', svc);
+
+  startApp();
+}
+
+function connectDemo() {
+  isDemo = true;
+  BRANDS = JSON.parse(JSON.stringify(DEMO_BRANDS));
+  SKUS   = JSON.parse(JSON.stringify(DEMO_SKUS));
+  document.getElementById('connBadge').textContent = '● демо-режим';
+  document.getElementById('connBadge').style.background = '#fef3e2';
+  document.getElementById('connBadge').style.color = '#b45309';
+  startApp();
+}
+
+function goToConfig() {
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('configScreen').style.display = 'flex';
+}
+
+async function startApp() {
+  document.getElementById('configScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'flex';
+  await loadData();
+  renderAgentBrands();
+  renderAdminBrands();
+  renderSkuFilter();
+  loadSkuTable();
+}
+
+// ═══════════════════════════════════════════
+// DATA LOADING
+// ═══════════════════════════════════════════
+async function loadData() {
+  if (isDemo) return;
+  try {
+    const [bRes, sRes] = await Promise.all([
+      supabase.from('brands').select('*').order('priority'),
+      supabase.from('skus').select('*').order('priority'),
+    ]);
+    if (bRes.error) throw bRes.error;
+    if (sRes.error) throw sRes.error;
+    BRANDS = bRes.data;
+    SKUS   = sRes.data;
+  } catch(e) {
+    toast('Ошибка загрузки: ' + e.message, true);
+  }
+}
+
+// ═══════════════════════════════════════════
+// AGENT VIEW
+// ═══════════════════════════════════════════
+let agentSelected = new Set();
+
+function renderAgentBrands() {
+  const activeBrands = BRANDS.filter(b => b.active);
+  agentSelected = new Set(activeBrands.map(b => b.id));
+  const el = document.getElementById('agentBrandList');
+  if (!activeBrands.length) {
+    el.innerHTML = '<div class="empty-state">Нет активных брендов</div>';
+    return;
+  }
+  el.innerHTML = activeBrands.map(b => `
+    <div class="brand-select-item on" id="bsel_${b.id}" onclick="toggleAgentBrand('${b.id}')">
+      <div class="bname">
+        <span class="brand-dot" style="background:${b.color}"></span>${b.name}
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="bmeta">Приоритет ${b.priority} · ${b.shelf_share}%</div>
+        <div class="check-circle">✓</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAgentBrand(id) {
+  const el = document.getElementById('bsel_' + id);
+  if (agentSelected.has(id)) {
+    agentSelected.delete(id);
+    el.classList.remove('on');
+    el.querySelector('.check-circle').textContent = '';
+  } else {
+    agentSelected.add(id);
+    el.classList.add('on');
+    el.querySelector('.check-circle').textContent = '✓';
+  }
+}
+
+function generatePlanogram() {
+  const shelfLen   = parseInt(document.getElementById('aShelfLen').value)   || 120;
+  const shelfCount = parseInt(document.getElementById('aShelfCount').value) || 3;
+  const facingW    = parseInt(document.getElementById('aFacingW').value)    || 10;
+  const cellH      = parseInt(document.getElementById('aCellH').value)      || 20;
+
+  const active = BRANDS.filter(b => b.active && agentSelected.has(b.id))
+                       .sort((a, b) => a.priority - b.priority);
+
+  if (!active.length) {
+    document.getElementById('planogramOutput').innerHTML = '<div class="empty-state">Выберите хотя бы один бренд</div>';
+    return;
+  }
+
+  const totalFacings = Math.floor(shelfLen / facingW);
+  const totalShare   = active.reduce((s, b) => s + Number(b.shelf_share), 0);
+
+  // Build cells
+  let cells = [];
+  active.forEach(brand => {
+    const bSkus = SKUS.filter(s => s.brand_id === brand.id && s.active)
+                      .sort((a, b) => a.priority - b.priority);
+    if (!bSkus.length) return;
+    const facings = Math.max(1, Math.round((brand.shelf_share / totalShare) * totalFacings));
+    for (let f = 0; f < facings; f++) {
+      cells.push({ brand, sku: bSkus[f % bSkus.length] });
+    }
+  });
+
+  // Adjust to exact total
+  while (cells.length > totalFacings) cells.pop();
+  while (cells.length < totalFacings && cells.length > 0) {
+    cells.push({ ...cells[cells.length - 1] });
+  }
+
+  const pxPerCm = 5.2;
+  const cellPx  = Math.max(36, Math.floor(facingW * pxPerCm));
+  const rowH    = Math.max(52, Math.floor(cellH * 2.4));
+
+  let html = '<div class="planogram-container">';
+  for (let s = 0; s < shelfCount; s++) {
+    html += `<div class="shelf-row-wrap">
+      <div class="shelf-label-col">Полка ${s + 1}</div>
+      <div class="shelf-track">`;
+    cells.forEach(c => {
+      const imgHtml = c.sku.photo_url
+        ? `<img src="${c.sku.photo_url}" alt="${c.sku.name}">`
+        : '';
+      html += `<div class="facing" style="width:${cellPx}px;min-width:${cellPx}px;height:${rowH}px;background:${c.brand.color};color:${c.brand.text_color}">
+        ${imgHtml}
+        <div class="facing-brand">${c.brand.name}</div>
+        <div class="facing-sku">${c.sku.name}</div>
+      </div>`;
+    });
+    html += '</div></div>';
+  }
+  html += '</div>';
+
+  // Legend
+  html += '<div class="planogram-legend">';
+  active.forEach(b => {
+    const f = Math.max(1, Math.round((b.shelf_share / totalShare) * totalFacings));
+    html += `<div class="legend-item">
+      <div class="legend-swatch" style="background:${b.color};border:1px solid ${b.text_color}40"></div>
+      <span>${b.name} — ${f} фейс. (${f * facingW} см)</span>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Stats
+  html += `<div class="stats-strip">
+    <div class="stat-chip"><div class="val">${totalFacings}</div><div class="lbl">фейсингов</div></div>
+    <div class="stat-chip"><div class="val">${shelfLen} см</div><div class="lbl">длина полки</div></div>
+    <div class="stat-chip"><div class="val">${shelfCount}</div><div class="lbl">полок</div></div>
+    <div class="stat-chip"><div class="val">${active.length}</div><div class="lbl">брендов</div></div>
+    <div class="stat-chip"><div class="val">${cells.length * shelfCount}</div><div class="lbl">ячеек итого</div></div>
+  </div>`;
+
+  document.getElementById('planogramOutput').innerHTML = html;
+  document.getElementById('printBtn').style.display = 'inline-block';
+}
+
+function printPlanogram() {
+  window.print();
+}
+
+// ═══════════════════════════════════════════
+// ADMIN — BRANDS
+// ═══════════════════════════════════════════
+function renderAdminBrands() {
+  const el = document.getElementById('brandsAdminList');
+  if (!BRANDS.length) { el.innerHTML = '<div class="empty-state">Нет брендов</div>'; return; }
+  el.innerHTML = `<div class="brands-admin-grid">` + BRANDS.map(b => `
+    <div class="brand-admin-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:32px;height:32px;border-radius:8px;background:${b.color};border:1px solid ${b.text_color}30"></div>
+        <div>
+          <div style="font-weight:600;font-size:14px">${b.name}</div>
+          <div style="font-size:11px;color:var(--text3)">Приоритет ${b.priority} · ${b.shelf_share}% полки</div>
+        </div>
+        <div style="margin-left:auto">
+          <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${b.active ? 'var(--accent-bg)' : 'var(--surface2)'};color:${b.active ? 'var(--accent)' : 'var(--text3)'}">
+            ${b.active ? 'активен' : 'скрыт'}
+          </span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px">
+        SKU: ${SKUS.filter(s => s.brand_id === b.id).length} позиций
+      </div>
+      <div class="card-actions">
+        <button class="btn-sm btn-gray" onclick='openBrandModal(${JSON.stringify(b)})'>✏️ Изменить</button>
+        <button class="btn-sm ${b.active ? 'btn-gray' : 'btn-green'}" onclick="toggleBrandActive('${b.id}',${!b.active})">
+          ${b.active ? '🙈 Скрыть' : '👁 Показать'}
+        </button>
+        <button class="btn-sm btn-red" onclick="deleteBrand('${b.id}')">🗑 Удалить</button>
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+function renderSkuFilter() {
+  const sel = document.getElementById('skuBrandFilter');
+  sel.innerHTML = '<option value="">Все бренды</option>' +
+    BRANDS.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+  const ssel = document.getElementById('sBrand');
+  ssel.innerHTML = BRANDS.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// ADMIN — SKU TABLE
+// ═══════════════════════════════════════════
+function loadSkuTable() {
+  const filter = document.getElementById('skuBrandFilter').value;
+  let rows = filter ? SKUS.filter(s => s.brand_id === filter) : SKUS;
+  rows = rows.sort((a, b) => {
+    const ba = BRANDS.find(x => x.id === a.brand_id);
+    const bb = BRANDS.find(x => x.id === b.brand_id);
+    return (ba?.priority || 99) - (bb?.priority || 99) || a.priority - b.priority;
+  });
+  const tbody = document.getElementById('skuTableBody');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">Нет SKU</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(s => {
+    const brand = BRANDS.find(b => b.id === s.brand_id);
+    const photoEl = s.photo_url
+      ? `<img class="sku-photo" src="${s.photo_url}" alt="${s.name}">`
+      : `<div class="sku-photo-empty" onclick="triggerPhotoUpload('${s.id}')">+</div>
+         <input class="upload-input" type="file" accept="image/*" id="up_${s.id}" onchange="uploadSkuPhoto('${s.id}',this)">`;
+    return `<tr>
+      <td>${photoEl}</td>
+      <td><strong>${s.name}</strong></td>
+      <td>
+        ${brand ? `<span class="brand-dot" style="background:${brand.color}"></span>${brand.name}` : '—'}
+      </td>
+      <td style="text-align:center">${s.format}</td>
+      <td style="text-align:center">${s.priority}</td>
+      <td>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${s.active ? 'var(--accent-bg)' : 'var(--surface2)'};color:${s.active ? 'var(--accent)' : 'var(--text3)'}">
+          ${s.active ? 'актив.' : 'скрыт'}
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-sm btn-gray" onclick='openSkuModal(${JSON.stringify(s)})'>✏️</button>
+          <button class="btn-sm btn-red" onclick="deleteSku('${s.id}')">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// BRAND MODAL
+// ═══════════════════════════════════════════
+function openBrandModal(brand) {
+  document.getElementById('brandModalTitle').textContent = brand ? 'Изменить бренд' : 'Новый бренд';
+  document.getElementById('bModalId').value   = brand?.id || '';
+  document.getElementById('bName').value      = brand?.name || '';
+  document.getElementById('bPriority').value  = brand?.priority || BRANDS.length + 1;
+  document.getElementById('bShare').value     = brand?.shelf_share || 20;
+  document.getElementById('bColor').value     = brand?.color || '#9FE1CB';
+  document.getElementById('bTextColor').value = brand?.text_color || '#085041';
+  updateBrandPreview();
+  document.getElementById('bColor').oninput = updateBrandPreview;
+  document.getElementById('bTextColor').oninput = updateBrandPreview;
+  openModal('brandModal');
+}
+
+function updateBrandPreview() {
+  const p = document.getElementById('bPreview');
+  p.style.background = document.getElementById('bColor').value;
+  p.style.color = document.getElementById('bTextColor').value;
+  p.textContent = document.getElementById('bName').value || 'Превью';
+}
+
+async function saveBrand() {
+  const id    = document.getElementById('bModalId').value;
+  const data  = {
+    name:        document.getElementById('bName').value.trim(),
+    priority:    parseInt(document.getElementById('bPriority').value),
+    shelf_share: parseFloat(document.getElementById('bShare').value),
+    color:       document.getElementById('bColor').value,
+    text_color:  document.getElementById('bTextColor').value,
+  };
+  if (!data.name) { toast('Введите название', true); return; }
+
+  if (isDemo) {
+    if (id) { const i = BRANDS.findIndex(b => b.id === id); if (i>=0) BRANDS[i] = {...BRANDS[i], ...data}; }
+    else BRANDS.push({ id: 'b'+Date.now(), active: true, ...data });
+  } else {
+    const cli = serviceClient || supabase;
+    let res;
+    if (id) res = await cli.from('brands').update(data).eq('id', id);
+    else    res = await cli.from('brands').insert({ ...data, active: true });
+    if (res.error) { toast(res.error.message, true); return; }
+    await loadData();
+  }
+  closeModal('brandModal');
+  renderAdminBrands(); renderAgentBrands(); renderSkuFilter();
+  toast(id ? 'Бренд обновлён' : 'Бренд добавлен');
+}
+
+async function toggleBrandActive(id, val) {
+  if (isDemo) { const b = BRANDS.find(x => x.id === id); if (b) b.active = val; }
+  else {
+    const cli = serviceClient || supabase;
+    const res = await cli.from('brands').update({ active: val }).eq('id', id);
+    if (res.error) { toast(res.error.message, true); return; }
+    await loadData();
+  }
+  renderAdminBrands(); renderAgentBrands();
+  toast(val ? 'Бренд активирован' : 'Бренд скрыт');
+}
+
+async function deleteBrand(id) {
+  if (!confirm('Удалить бренд и все его SKU?')) return;
+  if (isDemo) {
+    BRANDS = BRANDS.filter(b => b.id !== id);
+    SKUS   = SKUS.filter(s => s.brand_id !== id);
+  } else {
+    const cli = serviceClient || supabase;
+    const res = await cli.from('brands').delete().eq('id', id);
+    if (res.error) { toast(res.error.message, true); return; }
+    await loadData();
+  }
+  renderAdminBrands(); renderAgentBrands(); renderSkuFilter(); loadSkuTable();
+  toast('Бренд удалён');
+}
+
+// ═══════════════════════════════════════════
+// SKU MODAL
+// ═══════════════════════════════════════════
+function openSkuModal(sku) {
+  document.getElementById('skuModalTitle').textContent = sku ? 'Изменить SKU' : 'Новый SKU';
+  document.getElementById('sModalId').value   = sku?.id || '';
+  document.getElementById('sName').value      = sku?.name || '';
+  document.getElementById('sBrand').value     = sku?.brand_id || (BRANDS[0]?.id || '');
+  document.getElementById('sFormat').value    = sku?.format || 1;
+  document.getElementById('sPriority').value  = sku?.priority || (SKUS.length + 1);
+  const prev = document.getElementById('sPhotoPreview');
+  prev.innerHTML = sku?.photo_url ? `<img src="${sku.photo_url}" style="width:100%;height:100%;object-fit:cover">` : '📷';
+  prev._pendingFile = null;
+  document.getElementById('sPhotoFile').value = '';
+  openModal('skuModal');
+}
+
+function previewPhoto(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prev = document.getElementById('sPhotoPreview');
+    prev.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+    prev._pendingFile = file;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveSku() {
+  const id   = document.getElementById('sModalId').value;
+  const data = {
+    brand_id: document.getElementById('sBrand').value,
+    name:     document.getElementById('sName').value.trim(),
+    format:   parseInt(document.getElementById('sFormat').value),
+    priority: parseInt(document.getElementById('sPriority').value),
+  };
+  if (!data.name) { toast('Введите название SKU', true); return; }
+
+  const prev = document.getElementById('sPhotoPreview');
+  const pendingFile = prev._pendingFile;
+
+  if (!isDemo && pendingFile && serviceClient) {
+    const ext = pendingFile.name.split('.').pop();
+    const path = `${data.brand_id}/${Date.now()}.${ext}`;
+    const upRes = await serviceClient.storage.from('sku-photos').upload(path, pendingFile, { upsert: true });
+    if (upRes.error) { toast('Ошибка загрузки фото: ' + upRes.error.message, true); return; }
+    const { data: urlData } = serviceClient.storage.from('sku-photos').getPublicUrl(path);
+    data.photo_url = urlData.publicUrl;
+  }
+
+  if (isDemo) {
+    if (id) { const i = SKUS.findIndex(s => s.id === id); if (i>=0) SKUS[i] = {...SKUS[i], ...data}; }
+    else SKUS.push({ id: 's'+Date.now(), active: true, photo_url: null, ...data });
+  } else {
+    const cli = serviceClient || supabase;
+    let res;
+    if (id) res = await cli.from('skus').update(data).eq('id', id);
+    else    res = await cli.from('skus').insert({ ...data, active: true });
+    if (res.error) { toast(res.error.message, true); return; }
+    await loadData();
+  }
+  closeModal('skuModal');
+  loadSkuTable();
+  toast(id ? 'SKU обновлён' : 'SKU добавлен');
+}
+
+async function deleteSku(id) {
+  if (!confirm('Удалить этот SKU?')) return;
+  if (isDemo) { SKUS = SKUS.filter(s => s.id !== id); }
+  else {
+    const cli = serviceClient || supabase;
+    const res = await cli.from('skus').delete().eq('id', id);
+    if (res.error) { toast(res.error.message, true); return; }
+    await loadData();
+  }
+  loadSkuTable();
+  toast('SKU удалён');
+}
+
+function triggerPhotoUpload(skuId) {
+  document.getElementById('up_' + skuId)?.click();
+}
+
+async function uploadSkuPhoto(skuId, input) {
+  const file = input.files[0]; if (!file) return;
+  if (!serviceClient) { toast('Нужен service role key для загрузки фото', true); return; }
+  const ext  = file.name.split('.').pop();
+  const path = `sku/${skuId}.${ext}`;
+  const upRes = await serviceClient.storage.from('sku-photos').upload(path, file, { upsert: true });
+  if (upRes.error) { toast('Ошибка: ' + upRes.error.message, true); return; }
+  const { data } = serviceClient.storage.from('sku-photos').getPublicUrl(path);
+  const res = await serviceClient.from('skus').update({ photo_url: data.publicUrl }).eq('id', skuId);
+  if (res.error) { toast(res.error.message, true); return; }
+  await loadData(); loadSkuTable();
+  toast('Фото загружено ✓');
+}
+
+// ═══════════════════════════════════════════
+// TAB SWITCH
+// ═══════════════════════════════════════════
+function switchTab(tab) {
+  document.getElementById('agentTab').style.display = tab === 'agent' ? 'block' : 'none';
+  document.getElementById('adminTab').style.display = tab === 'admin' ? 'block' : 'none';
+  document.getElementById('tabAgent').classList.toggle('active', tab === 'agent');
+  document.getElementById('tabAdmin').classList.toggle('active', tab === 'admin');
+}
+
+// ═══════════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
+});
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+let toastTimer;
+function toast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (isErr ? ' error' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 3000);
+}
+
+// ═══════════════════════════════════════════
+// INIT — restore saved keys
+// ═══════════════════════════════════════════
+const DEFAULT_URL  = 'https://hsuzmvmffdcbayvksqtl.supabase.co';
+const DEFAULT_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzdXptdm1mZmRjYmF5dmtzcXRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NTEzMDgsImV4cCI6MjA5NjIyNzMwOH0.Ydqs1cHbichhZTU-MHLi19JHzHP9R__apfKoH9ws_iA';
+const DEFAULT_SVC  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzdXptdm1mZmRjYmF5dmtzcXRsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDY1MTMwOCwiZXhwIjoyMDk2MjI3MzA4fQ.w5VcbVq1ksvadr0nWQv9z6rqTmz4Xn9_BojBuEnPveg';
+
+function waitForSupabaseAndConnect() {
+  if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+    connectSupabase();
+  } else {
+    setTimeout(waitForSupabaseAndConnect, 100);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const url  = localStorage.getItem('pg_url')  || DEFAULT_URL;
+  const anon = localStorage.getItem('pg_anon') || DEFAULT_ANON;
+  const svc  = localStorage.getItem('pg_svc')  || DEFAULT_SVC;
+  document.getElementById('cfgUrl').value     = url;
+  document.getElementById('cfgAnon').value    = anon;
+  document.getElementById('cfgService').value = svc;
+  waitForSupabaseAndConnect();
+});
+</script>
+
+
+</body></html>
